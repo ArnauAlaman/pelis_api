@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:scooby_app/src/models/pelicula_model.dart';
-import 'package:scooby_app/src/providers/peliculas_provider.dart';
+import 'package:scooby_app/src/models/actores_model.dart';
+import 'package:scooby_app/src/providers/actores_provider.dart';
 
 class DataSearch extends SearchDelegate {
+
   String seleccion = '';
-  final peliculasProvider = new PeliculasProvider();
+  final actoresProvider = new ActoresProvider();
 
   final peliculas = [
     'Spiderman',
@@ -65,31 +66,35 @@ class DataSearch extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     // Son las sugerencias que aparecen cuando la persona escribe
-    if (query.isEmpty) {
-      return Container();
-    }
+
 
     return FutureBuilder(
-      future: peliculasProvider.buscarPelicula(query),
-      builder: (BuildContext context, AsyncSnapshot<List<Pelicula>> snapshot) {
+      future: ActoresProvider().buscarActor(query),
+      builder: (BuildContext context, AsyncSnapshot<List<Actor>> snapshot) {
         if (snapshot.hasData) {
-          final peliculas = snapshot.data;
+          final actores = snapshot.data;
 
           return ListView(
-              children: peliculas.map((pelicula) {
+              children: actores.map((actor) {
             return ListTile(
               leading: FadeInImage(
-                image: NetworkImage(pelicula.getPosterImg()),
+                image: NetworkImage(actor.getFoto()),
                 placeholder: AssetImage('assets/img/no-image.jpg'),
                 width: 50.0,
                 fit: BoxFit.contain,
               ),
-              title: Text(pelicula.title),
-              subtitle: Text(pelicula.originalTitle),
+              title: Text(actor.name),
+              subtitle: Row(
+                children: [
+                  Icon(Icons.star_border),
+                  Text(actor.rating.toString() + "/100")
+
+                ],
+              ),
               onTap: () {
                 close(context, null);
-                pelicula.uniqueId = '';
-                Navigator.pushNamed(context, 'detalle', arguments: pelicula);
+                actor.id = 1;
+                Navigator.pushNamed(context, 'detalle', arguments: actor);
               },
             );
           }).toList());
@@ -99,30 +104,4 @@ class DataSearch extends SearchDelegate {
       },
     );
   }
-
-  // @override
-  // Widget buildSuggestions(BuildContext context) {
-  //   // Son las sugerencias que aparecen cuando la persona escribe
-
-  //   final listaSugerida = ( query.isEmpty )
-  //                           ? peliculasRecientes
-  //                           : peliculas.where(
-  //                             (p)=> p.toLowerCase().startsWith(query.toLowerCase())
-  //                           ).toList();
-
-  //   return ListView.builder(
-  //     itemCount: listaSugerida.length,
-  //     itemBuilder: (context, i) {
-  //       return ListTile(
-  //         leading: Icon(Icons.movie),
-  //         title: Text(listaSugerida[i]),
-  //         onTap: (){
-  //           seleccion = listaSugerida[i];
-  //           showResults( context );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
-
 }

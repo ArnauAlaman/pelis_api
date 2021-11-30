@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:scooby_app/src/providers/peliculas_provider.dart';
+import 'package:scooby_app/src/providers/actores_provider.dart';
 import 'package:scooby_app/src/search/search_delegate.dart';
-
+import 'package:scooby_app/src/models/actores_model.dart';
 import 'package:scooby_app/src/widgets/card_swiper_widget.dart';
-import 'package:scooby_app/src/widgets/movie_horizontal.dart';
+import 'package:scooby_app/src/widgets/actor_horizontal.dart';
 
 class HomePage extends StatelessWidget {
-  final peliculasProvider = new PeliculasProvider();
+  final ActoresProviders = new ActoresProvider();
 
   @override
   Widget build(BuildContext context) {
-    peliculasProvider.getPopulares();
+    ActoresProviders.getPopulares();
 
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('Peliculas TMDB'),
+          title: Text('Actores TMDB'),
           backgroundColor: Colors.redAccent,
           actions: <Widget>[
             IconButton(
@@ -39,10 +39,10 @@ class HomePage extends StatelessWidget {
 
   Widget _swiperTarjetas() {
     return FutureBuilder(
-      future: peliculasProvider.getEnCines(),
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+      future: ActoresProviders.getEnCines(),
+      builder: (BuildContext context, AsyncSnapshot<List<Actor>> snapshot) {
         if (snapshot.hasData) {
-          return CardSwiper(peliculas: snapshot.data);
+          return CardSwiper(actores: snapshot.data);
         } else {
           return Container(height: 400.0, child: Center(child: CircularProgressIndicator()));
         }
@@ -59,12 +59,12 @@ class HomePage extends StatelessWidget {
           Container(padding: EdgeInsets.only(left: 20.0), child: Text('Populares', style: Theme.of(context).textTheme.bodyText1)),
           SizedBox(height: 5.0),
           StreamBuilder(
-            stream: peliculasProvider.popularesStream,
+            stream: ActoresProviders.popularesStream,
             builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
               if (snapshot.hasData) {
                 return MovieHorizontal(
-                  peliculas: snapshot.data,
-                  siguientePagina: peliculasProvider.getPopulares,
+                  actores: snapshot.data,
+                  siguientePagina: ActoresProviders.getPopulares,
                 );
               } else {
                 return Center(child: CircularProgressIndicator());
